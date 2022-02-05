@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Clone</title>
+    <link rel="stylesheet" href="./styles/common.css">
+</head>
+
+<body>
+    <div id="container"></div>
+    <div id="right">
+        <div id="left">
+            <div class="menu">🏠 Home</div>
+            <div class="menu">Explore</div>
+            <div class="menu">Subscriptions</div>
+            <div class="border">
+                <hr>
+            </div>
+            <div class="menu">Library</div>
+            <div class="menu">History</div>
+            <div class="menu">📽️ Your Videos</div>
+            <div class="menu">Watch Later</div>
+            <div class="menu">👍 Liked Videos</div>
+            <div class="border">
+                <hr>
+            </div>
+            <div id="more">MORE FROM YOUTUBE</div>
+            <div class="menu">YouTube Premium</div>
+            <div class="menu">🍿 Movies</div>
+            <div class="menu">🏏 Gaming</div>
+            <div class="menu">Live</div>
+            <div class="menu">🏫 Learning</div>
+            <div class="menu"> 🏅Sports</div>
+            <div class="border">
+                <hr>
+            </div>
+            <div class="menu">Fashion & Beauty</div>
+            <div class="menu">Settings</div>
+            <div class="menu">Report History</div>
+            <div class="menu">Help</div>
+            <div class="menu">Send Feedback</div>
+            <div class="menu"></div>
+        </div>
+        <div id="yttVideos"></div>
+    </div>
+    </div>
+</body>
+
+</html>
+<script type="module">
+
+    let userDiv = document.getElementById("yttVideos");
+
+    import navbar from "./scripts/navbar.js";
+
+    let container = document.getElementById("container");
+    container.innerHTML = navbar();
+
+    document.getElementById("searchVideo").addEventListener("click", searchVideo);
+
+    let getName = JSON.parse(localStorage.getItem("name"));
+
+    let greet = document.getElementById("greet");
+    greet.textContent = `Hello, ${getName}`;
+
+    // By default page //
+    async function searchVideos() {
+
+        try {
+            let api = "https://youtube.googleapis.com/youtube/v3/search?part=snippet&q=PopularVideos&type=video&key=AIzaSyDcPdI3Oqhp8x1CzWbuQtajp6TCjWbfEJ0&maxResults=26";
+            let res = await fetch(api);
+            let data = await res.json();
+            let videos = data.items;
+            console.log(videos);
+            ytVideos(videos);
+
+            localStorage.setItem("rec", JSON.stringify(videos));
+        }
+
+        catch (err) {
+            console.log("Hey, I am back bro!", err);
+        }
+    }
+    searchVideos();
+
+    function ytVideos(ytv) {
+        ytv.forEach((yt) => {
+
+            let div = document.createElement("div");
+
+            let { snippet, id: { videoId } } = yt;
+
+            let { snippet: { title } } = yt;
+
+            let thumbnail = document.createElement("img");
+            thumbnail.src = snippet.thumbnails.medium.url
+
+            let p = document.createElement("p");
+            p.textContent = `${title}`;
+
+            let data = {
+                snippet,
+                videoId
+            }
+
+            div.onclick = () => {
+                showVideo(data);
+            }
+
+            div.append(thumbnail, p);
+            userDiv.append(div);
+        });
+    }
+
+    // On search by user //
+    async function searchVideo() {
+        let name = document.getElementById("video").value;
+
+        try {
+            let url = `https://youtube.googleapis.com/youtube/v3/search?part=snippet&q=${name}&type=video&key=AIzaSyDcPdI3Oqhp8x1CzWbuQtajp6TCjWbfEJ0&maxResults=26`;
+            let res = await fetch(url);
+            let data = await res.json();
+            let videos = data.items;
+            console.log(videos);
+            ytVideo(videos);
+
+            localStorage.setItem("rec", JSON.stringify(videos));
+        }
+
+        catch (err) {
+            console.log("Hey, I am back bro!", err);
+        }
+    }
+
+    function ytVideo(ytvv) {
+        document.querySelector("#yttVideos").innerHTML = null;
+        ytvv.forEach((ytt) => {
+
+            let div = document.createElement("div");
+
+            let { snippet, id: { videoId } } = ytt;
+
+            let { snippet: { title } } = ytt;
+
+            let thumbnail = document.createElement("img");
+            thumbnail.src = snippet.thumbnails.medium.url
+
+            let p = document.createElement("p");
+            p.textContent = `${title}`;
+
+            let data = {
+                snippet,
+                videoId
+            }
+
+            div.onclick = () => {
+                showVideo(data);
+            }
+
+            div.append(thumbnail, p);
+            userDiv.append(div);
+        });
+    }
+
+    function showVideo(get) {
+        localStorage.setItem("gettingVideo", JSON.stringify(get));
+
+        window.location.href = "video.html";
+    }
+
+</script>
+
+
+
+
+
+
+<!-- // let iframe = document.createElement("iframe");
+// iframe.src = `https://www.youtube.com/embed/${videoId}`;
+// iframe.height = "150";
+// iframe.width = "330";
+// iframe.setAttribute("allowfullscreen", true); -->
+
+<!-- // youtube API -
+`https://youtube.googleapis.com/youtube/v3/search?part=snippet&q=tesla&type=video&key=AIzaSyCgpedXNhZWyAsiQEnO89bs9DCMqq-6Sb0&maxresults=20`
+
+// curl \
+//
+'https://youtube.googleapis.com/youtube/v3/search?q=${name}&key=AIzaSyCgpedXNhZWyAsiQEnO89bs9DCMqq-6Sb0&maxResults=20' \ -->
